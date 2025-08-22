@@ -1,0 +1,39 @@
+{
+  "Version": 1,
+  "Hash": "A04sz3p3/idyTFR6lnX31dqqeDbIaY8F9/9LO41AoGI=",
+  "Source": "Taskly.Api",
+  "BasePath": "_content/Taskly.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "Taskly.Api\\wwwroot",
+      "Source": "Taskly.Api",
+      "ContentRoot": "C:\\Users\\pc1\\taskify\\src\\Taskly.Api\\wwwroot\\",
+      "BasePath": "_content/Taskly.Api",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\pc1\\taskify\\src\\Taskly.Api\\wwwroot\\swagger-auth.js",
+      "SourceId": "Taskly.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\pc1\\taskify\\src\\Taskly.Api\\wwwroot\\",
+      "BasePath": "_content/Taskly.Api",
+      "RelativePath": "swagger-auth.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\swagger-auth.js"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\bin\Debug\net8.0\Taskly.Infrastructure.deps.json
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\bin\Debug\net8.0\Taskly.Infrastructure.dll
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\bin\Debug\net8.0\Taskly.Infrastructure.pdb
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\bin\Debug\net8.0\Taskly.Application.dll
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\bin\Debug\net8.0\Taskly.Domain.dll
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\bin\Debug\net8.0\Taskly.Domain.pdb
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\bin\Debug\net8.0\Taskly.Application.pdb
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\Taskly.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\Taskly.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\Taskly.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\Taskly.Infrastructure.AssemblyInfo.cs
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\Taskly.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\Taskly.I.09447590.Up2Date
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\Taskly.Infrastructure.dll
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\refint\Taskly.Infrastructure.dll
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\Taskly.Infrastructure.pdb
+C:\Users\pc1\taskify\src\Taskly.Infrastructure\obj\Debug\net8.0\ref\Taskly.Infrastructure.dll

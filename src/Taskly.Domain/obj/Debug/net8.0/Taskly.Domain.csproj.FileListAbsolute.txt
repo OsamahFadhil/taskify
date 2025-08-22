@@ -1,0 +1,11 @@
+C:\Users\pc1\taskify\src\Taskly.Domain\bin\Debug\net8.0\Taskly.Domain.deps.json
+C:\Users\pc1\taskify\src\Taskly.Domain\bin\Debug\net8.0\Taskly.Domain.dll
+C:\Users\pc1\taskify\src\Taskly.Domain\bin\Debug\net8.0\Taskly.Domain.pdb
+C:\Users\pc1\taskify\src\Taskly.Domain\obj\Debug\net8.0\Taskly.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pc1\taskify\src\Taskly.Domain\obj\Debug\net8.0\Taskly.Domain.AssemblyInfoInputs.cache
+C:\Users\pc1\taskify\src\Taskly.Domain\obj\Debug\net8.0\Taskly.Domain.AssemblyInfo.cs
+C:\Users\pc1\taskify\src\Taskly.Domain\obj\Debug\net8.0\Taskly.Domain.csproj.CoreCompileInputs.cache
+C:\Users\pc1\taskify\src\Taskly.Domain\obj\Debug\net8.0\Taskly.Domain.dll
+C:\Users\pc1\taskify\src\Taskly.Domain\obj\Debug\net8.0\refint\Taskly.Domain.dll
+C:\Users\pc1\taskify\src\Taskly.Domain\obj\Debug\net8.0\Taskly.Domain.pdb
+C:\Users\pc1\taskify\src\Taskly.Domain\obj\Debug\net8.0\ref\Taskly.Domain.dll
