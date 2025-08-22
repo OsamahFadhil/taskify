@@ -14,9 +14,10 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check for saved theme preference or default to system preference
+    setMounted(true);
     const savedTheme = localStorage.getItem('taskly_theme') as Theme;
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -28,18 +29,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Apply theme to document
+    if (!mounted) return;
+    
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
     
-    // Save theme preference
     localStorage.setItem('taskly_theme', theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
+
+  if (!mounted) {
+    return <div style={{ visibility: 'hidden' }}>{children}</div>;
+  }
 
   const value: ThemeContextType = {
     theme,

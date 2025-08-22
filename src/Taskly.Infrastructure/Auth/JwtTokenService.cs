@@ -40,9 +40,6 @@ public sealed class JwtTokenService : IJwtTokenService
 
         var raw = new JwtSecurityTokenHandler().WriteToken(token);
 
-        Console.WriteLine($"🔍 JWT Token generated for user: {user.Username.Value} (ID: {user.Id})");
-        Console.WriteLine($"🔍 Token contains claims: {string.Join(", ", claims.Select(c => $"{c.Type}={c.Value}"))}");
-
         return new AuthResultDto(raw, expires, new(user.Id, user.Username.Value, user.Email.Value));
     }
 }

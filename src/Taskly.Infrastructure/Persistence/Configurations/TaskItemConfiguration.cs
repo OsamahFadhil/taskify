@@ -14,7 +14,6 @@ public sealed class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         b.Property(x => x.UserId).IsRequired();
         b.Property(x => x.IsCompleted).IsRequired();
 
-        // Configure DateTime properties to be stored as UTC
         b.Property(x => x.CreatedAt)
             .IsRequired()
             .HasConversion(

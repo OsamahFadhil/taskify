@@ -27,11 +27,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isClient) return;
     
-    // Check if user is already authenticated on mount
+    // First try to get user from localStorage
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+      } catch {
+        // If parsing fails, remove invalid data
+        localStorage.removeItem('user');
+      }
+    }
+    
+    // Then check if we have a valid token and can get current user
     const currentUser = apiClient.getCurrentUser();
     if (currentUser) {
       setUser(currentUser);
+      // Update localStorage with fresh user data
+      localStorage.setItem('user', JSON.stringify(currentUser));
     }
+    
     setIsLoading(false);
   }, [isClient]);
 
@@ -39,6 +54,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await apiClient.login({ usernameOrEmail, password });
       setUser(response.user);
+      // Save user data to localStorage for persistence
+      localStorage.setItem('user', JSON.stringify(response.user));
     } catch (error) {
       throw error;
     }
@@ -48,6 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await apiClient.register({ username, email, password });
       setUser(response.user);
+      // Save user data to localStorage for persistence
+      localStorage.setItem('user', JSON.stringify(response.user));
     } catch (error) {
       throw error;
     }
@@ -55,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     apiClient.logout();
+    localStorage.removeItem('user');
     setUser(null);
   };
 

@@ -22,7 +22,6 @@ public sealed class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand
     public async Task<TaskDto> Handle(CreateTaskCommand request, CancellationToken ct)
     {
         var ownerId = _current.UserId ?? throw new UnauthorizedAccessException();
-        // Convert dueDate to UTC if it has a value to avoid PostgreSQL DateTime Kind errors
         var utcDueDate = request.DueDate?.Kind == DateTimeKind.Unspecified
             ? DateTime.SpecifyKind(request.DueDate.Value, DateTimeKind.Utc)
             : request.DueDate?.ToUniversalTime();
@@ -36,7 +35,6 @@ public sealed class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand
         await _repo.AddAsync(task, ct);
         await _repo.SaveChangesAsync(ct);
 
-        // Get user information for the task
         var user = await _userRepo.GetByIdAsync(task.UserId, ct);
 
         return new TaskDto(

@@ -1,111 +1,137 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, LoginFormData } from '@/lib/validations';
-import { Button } from './ui/Button';
-import { Input } from './ui/Input';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginUser, clearError } from '@/store/slices/authSlice';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { useRouter } from 'next/navigation';
-import { RootState } from '@/store';
+import { useAuth } from '@/lib/auth-context';
 
-export function LoginForm() {
-  const dispatch = useAppDispatch();
-  const { isLoading, error, isAuthenticated } = useAppSelector((state: RootState) => state.auth);
-  const router = useRouter();
+interface LoginFormProps {
+  onSuccess?: () => void;
+}
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+export function LoginForm({ onSuccess }: LoginFormProps) {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<'error' | 'warning' | 'info'>('error');
+  const router = useRouter();
+  const { login } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/dashboard');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setErrorType('error');
+
+    try {
+      await login(formData.email, formData.password);
+      
+      if (onSuccess) {
+        setTimeout(() => onSuccess(), 100);
+      } else {
+        setTimeout(() => router.push('/dashboard'), 100);
+      }
+    } catch (err: unknown) {
+      let errorMessage = 'An error occurred during login.';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      }
+      
+      setError(errorMessage);
+      
+      if (errorMessage.includes('Invalid credentials')) {
+        setErrorType('warning');
+      } else if (errorMessage.includes('server error')) {
+        setErrorType('error');
+      } else {
+        setErrorType('info');
+      }
+    } finally {
+      setIsLoading(false);
     }
-  }, [isAuthenticated, router]);
+  };
 
-  useEffect(() => {
-    // Clear error when component unmounts
-    return () => {
-      dispatch(clearError());
-    };
-  }, [dispatch]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
 
-  const onSubmit = async (data: LoginFormData) => {
-    if (isLoading) return;
-    
-    dispatch(loginUser(data));
+  const getErrorStyles = () => {
+    switch (errorType) {
+      case 'warning':
+        return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200';
+      case 'info':
+        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
+      default:
+        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200';
+    }
+  };
+
+  const getErrorIcon = () => {
+    switch (errorType) {
+      case 'warning':
+        return '⚠️';
+      case 'info':
+        return 'ℹ️';
+      default:
+        return '❌';
+    }
   };
 
   return (
-    <div className="w-full max-w-sm sm:max-w-md mx-auto">
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-responsive-sm sm:p-responsive-md shadow-responsive-lg mobile-form">
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-responsive-xl sm:text-responsive-2xl font-bold text-gray-900 dark:text-gray-100">Welcome Back</h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-2 text-responsive-sm sm:text-responsive-base">Sign in to your account</p>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-            <p className="text-responsive-sm text-red-600 dark:text-red-400">{error}</p>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className={`p-4 border rounded-xl ${getErrorStyles()}`}>
+          <div className="flex items-start space-x-3">
+            <span className="text-lg">{getErrorIcon()}</span>
+            <div className="flex-1">
+              <p className="text-sm font-medium">{error}</p>
+              {errorType === 'warning' && (
+                <p className="text-xs mt-1 opacity-80">
+                  Please check your username/email and password and try again.
+                </p>
+              )}
+            </div>
           </div>
-        )}
-
-        <form 
-          onSubmit={handleSubmit(onSubmit)} 
-          className="space-responsive-md" 
-          noValidate
-        >
-          <Input
-            label="Username or Email"
-            {...register('usernameOrEmail')}
-            error={errors.usernameOrEmail?.message}
-            placeholder="Enter your username or email"
-            autoComplete="username"
-            required
-            className="mobile-input"
-          />
-
-          <Input
-            label="Password"
-            type="password"
-            {...register('password')}
-            error={errors.password?.message}
-            placeholder="Enter your password"
-            autoComplete="current-password"
-            required
-            className="mobile-input"
-          />
-
-          <Button
-            type="submit"
-            isLoading={isLoading}
-            className="w-full mobile-button"
-            disabled={isLoading}
-          >
-            Sign In
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-responsive-sm text-gray-600 dark:text-gray-300">
-            Don&apos;t have an account?{' '}
-            <button
-              type="button"
-              onClick={() => router.push('/register')}
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium cursor-pointer"
-            >
-              Sign up
-            </button>
-          </p>
         </div>
+      )}
+      
+      <div>
+        <Input
+          type="text"
+          name="email"
+          placeholder="Username or Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          disabled={isLoading}
+        />
       </div>
-    </div>
+      
+      <div>
+        <Input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+          disabled={isLoading}
+        />
+      </div>
+      
+      <Button type="submit" disabled={isLoading} className="w-full">
+        {isLoading ? 'Signing in...' : 'Sign In'}
+      </Button>
+    </form>
   );
 }

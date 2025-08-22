@@ -1,21 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/store/hooks';
-import { RootState } from '@/store';
 
-export default function Home() {
-  const { isAuthenticated } = useAppSelector((state: RootState) => state.auth);
+export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    const token = localStorage.getItem('token');
+    if (token) {
       router.push('/dashboard');
-    } else {
-      router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">

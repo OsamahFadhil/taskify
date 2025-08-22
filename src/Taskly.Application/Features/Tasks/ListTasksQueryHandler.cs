@@ -26,22 +26,12 @@ public sealed class ListTasksQueryHandler : IRequestHandler<ListTasksQuery, Page
 
         var skip = (request.Page - 1) * request.PageSize;
 
-        // Debug logging
-        Console.WriteLine($"[DEBUG] Pagination: Page={request.Page}, PageSize={request.PageSize}, Skip={skip}");
-
-        // Get total count first
         var countSpec = new TaskByFiltersSpec(ownerId, request.Completed, request.DueOnOrBefore, null, null);
         var totalCount = await _repo.Query(countSpec).CountAsync(ct);
 
-        Console.WriteLine($"[DEBUG] Total count: {totalCount}");
-
-        // Get paginated results
         var dataSpec = new TaskByFiltersSpec(ownerId, request.Completed, request.DueOnOrBefore, skip, request.PageSize);
         var items = await _repo.Query(dataSpec).ToListAsync(ct);
 
-        Console.WriteLine($"[DEBUG] Retrieved items: {items.Count}");
-
-        // Get all unique user IDs from tasks
         var userIds = items.Select(t => t.UserId).Distinct().ToList();
         var userDict = new Dictionary<Guid, string>();
 
@@ -65,9 +55,6 @@ public sealed class ListTasksQueryHandler : IRequestHandler<ListTasksQuery, Page
             t.CreatedAt,
             t.CompletedAtUtc)).ToList();
 
-        var result = PagedResultDto<TaskDto>.Create(taskDtos, totalCount, request.Page, request.PageSize);
-        Console.WriteLine($"[DEBUG] Result: Page={result.Page}, TotalPages={result.TotalPages}, ItemsCount={result.Items.Count}");
-
-        return result;
+        return PagedResultDto<TaskDto>.Create(taskDtos, totalCount, request.Page, request.PageSize);
     }
 }

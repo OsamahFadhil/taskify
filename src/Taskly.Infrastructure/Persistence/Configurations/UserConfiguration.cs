@@ -10,7 +10,6 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
     {
         b.ToTable("users");
         b.HasKey(x => x.Id);
-        // Don't auto-generate ID since we're providing it in the domain
         b.Property(x => x.Id).IsRequired();
         b.Property(x => x.CreatedAt).IsRequired();
         b.Property(x => x.UpdatedAt).IsRequired();

@@ -32,7 +32,6 @@ public sealed class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand
         if (task.UserId != _current.UserId)
             throw new UnauthorizedAccessException();
 
-        // Convert dueDate to UTC if it has a value to avoid PostgreSQL DateTime Kind errors
         var utcDueDate = request.DueDate?.Kind == DateTimeKind.Unspecified
             ? DateTime.SpecifyKind(request.DueDate.Value, DateTimeKind.Utc)
             : request.DueDate?.ToUniversalTime();
@@ -40,7 +39,6 @@ public sealed class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand
         task.Update(TaskName.Create(request.Name), TaskDescription.Create(request.Description), DueDate.Create(utcDueDate), _clock.UtcNow);
         await _taskRepo.SaveChangesAsync(ct);
 
-        // Get user information for the task
         var user = await _userRepo.GetByIdAsync(task.UserId, ct);
 
         return new TaskDto(

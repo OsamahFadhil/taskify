@@ -15,7 +15,6 @@ public static class DataSeeder
         if (await context.Users.AnyAsync())
             return; // Already seeded
 
-        // Create users with consistent GUIDs for seeding
         var user1 = User.Seed(
             new Guid("11111111-1111-1111-1111-111111111111"),
             Username.Create("john_doe"),
@@ -33,9 +32,8 @@ public static class DataSeeder
         );
 
         context.Users.AddRange(user1, user2);
-        await context.SaveChangesAsync(); // Save users first to get their IDs
+        await context.SaveChangesAsync();
 
-        // Create tasks for user1
         var tasks1 = new[]
         {
             TaskItem.Create(user1.Id, TaskName.Create("Complete API Documentation"), TaskDescription.Create("Write comprehensive API documentation"), DueDate.Create(DateTime.UtcNow.AddDays(7)), DateTime.UtcNow),
@@ -43,7 +41,6 @@ public static class DataSeeder
             TaskItem.Create(user1.Id, TaskName.Create("Code Review"), TaskDescription.Create("Review pull requests from team"), DueDate.Create(DateTime.UtcNow.AddDays(2)), DateTime.UtcNow)
         };
 
-        // Create tasks for user2
         var tasks2 = new[]
         {
             TaskItem.Create(user2.Id, TaskName.Create("Design Database Schema"), TaskDescription.Create("Create ERD for new features"), DueDate.Create(DateTime.UtcNow.AddDays(5)), DateTime.UtcNow),

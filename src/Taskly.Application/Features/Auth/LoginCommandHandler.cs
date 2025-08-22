@@ -22,42 +22,21 @@ public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResu
 
     public async Task<AuthResultDto> Handle(LoginCommand request, CancellationToken ct)
     {
-        Console.WriteLine($"🔍 Login attempt for: {request.UsernameOrEmail}");
-        Console.WriteLine($"🔍 Password length: {request.Password?.Length ?? 0}");
-
-        // First, let's check if there are any users in the database
-        var allUsers = await _users.Query(new AlwaysTrueSpec<User>()).ToListAsync(ct);
-        Console.WriteLine($"🔍 Total users in database: {allUsers.Count}");
-        foreach (var u in allUsers)
-        {
-            Console.WriteLine($"  - User: {u.Username.Value} ({u.Email.Value}) - ID: {u.Id}");
-        }
-
         var user = await _users.Query(new UsernameOrEmailSpec(request.UsernameOrEmail)).FirstOrDefaultAsync(ct);
 
         if (user is null)
         {
-            Console.WriteLine($"❌ User not found with username/email: {request.UsernameOrEmail}");
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
-        Console.WriteLine($"✅ User found: {user.Username.Value} ({user.Email.Value})");
-        Console.WriteLine($"🔍 User ID: {user.Id}");
-        Console.WriteLine($"🔍 Stored password hash: {user.PasswordHash.Value}");
-        Console.WriteLine($"🔍 Verifying password: {request.Password}");
-
         var passwordValid = _hasher.Verify(request.Password, user.PasswordHash.Value);
-        Console.WriteLine($"🔍 Password verification result: {passwordValid}");
 
         if (!passwordValid)
         {
-            Console.WriteLine($"❌ Password verification failed");
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
-        Console.WriteLine($"✅ Login successful, creating token");
         var result = _jwt.CreateToken(user, _clock.UtcNow);
-        Console.WriteLine($"🔍 Token generated successfully. Expires at: {result.ExpiresAtUtc}");
         return result;
     }
 
@@ -66,7 +45,6 @@ public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResu
         public UsernameOrEmailSpec(string usernameOrEmail)
         {
             var searchTerm = usernameOrEmail.Trim().ToLowerInvariant();
-            Console.WriteLine($"🔍 Searching for user with term: '{searchTerm}'");
             Criteria = u => u.Username.Value == searchTerm || u.Email.Value == searchTerm;
         }
     }

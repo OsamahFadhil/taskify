@@ -1,51 +1,61 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/store/hooks';
-import { checkAuthStatus } from '@/store/slices/authSlice';
-import { useAppDispatch } from '@/store/hooks';
-import { RootState } from '@/store';
+import { apiClient } from '@/lib/api';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const dispatch = useAppDispatch();
-  const { isAuthenticated, isLoading, token } = useAppSelector((state: RootState) => state.auth);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // Only check auth status if we have a token but aren't authenticated yet
-    if (token && !isAuthenticated && !isLoading) {
-      dispatch(checkAuthStatus());
-    }
-  }, [dispatch, token, isAuthenticated, isLoading]);
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+
+        const user = apiClient.getCurrentUser();
+        if (user) {
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setIsAuthenticated(false);
+        }
+      } catch {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   useEffect(() => {
-    // Only redirect if we're not loading and definitely not authenticated
-    if (!isLoading && !isAuthenticated && !token) {
+    if (!isLoading && !isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, isLoading, token, router]);
+  }, [isAuthenticated, isLoading, router]);
 
-  // Show loading spinner while checking authentication
-  if (isLoading || (token && !isAuthenticated)) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Loading...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
-  // Don't render anything while redirecting
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  return <>{children}</>;
+  return isAuthenticated ? <>{children}</> : null;
 }

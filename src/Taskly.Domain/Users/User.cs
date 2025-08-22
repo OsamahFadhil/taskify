@@ -23,7 +23,6 @@ public sealed class User : AggregateRoot
     public static User Register(Username username, Email email, PasswordHash passwordHash, DateTime nowUtc)
         => new(Guid.NewGuid(), username, email, passwordHash, nowUtc);
 
-    // Static method for seeding with specific ID
     public static User Seed(Guid id, Username username, Email email, PasswordHash passwordHash, DateTime nowUtc)
         => new(id, username, email, passwordHash, nowUtc);
 }

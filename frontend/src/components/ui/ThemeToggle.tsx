@@ -1,26 +1,38 @@
 'use client';
 
-import { Moon, Sun } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { Button } from './Button';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { toggleTheme } from '@/store/slices/uiSlice';
-import { RootState } from '@/store';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from '@/lib/theme-context';
 
 export function ThemeToggle() {
-  const dispatch = useAppDispatch();
-  const theme = useAppSelector((state: RootState) => state.ui.theme);
+  const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  const handleToggle = () => {
-    dispatch(toggleTheme());
-  };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button
+        variant="secondary"
+        size="sm"
+        className="p-2"
+        disabled
+      >
+        <div className="h-4 w-4 animate-pulse bg-gray-300 rounded" />
+      </Button>
+    );
+  }
 
   return (
     <Button
-      variant="ghost"
+      variant="secondary"
       size="sm"
-      onClick={handleToggle}
-      className="p-2 cursor-pointer"
-      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      onClick={toggleTheme}
+      className="p-2 hover:scale-105 transition-transform duration-200"
+      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
     >
       {theme === 'light' ? (
         <Moon className="h-4 w-4" />

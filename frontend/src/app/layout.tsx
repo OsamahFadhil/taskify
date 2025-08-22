@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Providers } from '@/store/Providers';
-import { NotificationSystem } from '@/components/NotificationSystem';
+import { ThemeProvider } from '@/lib/theme-context';
+import { AuthProvider } from '@/lib/auth-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,10 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode; })
   return (
     <html lang="en" className="h-full">
       <body className={`${inter.className} h-full`}>
-        <Providers>
-          <NotificationSystem />
-          {children}
-        </Providers>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

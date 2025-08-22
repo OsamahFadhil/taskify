@@ -11,7 +11,7 @@ import {
   RegisterRequest
 } from '@/types';
 
-class ApiClient {
+export class ApiClient {
   private client: AxiosInstance;
   private baseURL: string;
 
@@ -56,28 +56,26 @@ class ApiClient {
   // Token management
   private getToken(): string | null {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('taskly_token');
+      return localStorage.getItem('token');
     }
     return null;
   }
 
   private setToken(token: string): void {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('taskly_token', token);
+      localStorage.setItem('token', token);
     }
   }
 
   private removeToken(): void {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('taskly_token');
+      localStorage.removeItem('token');
     }
   }
 
   // Auth endpoints
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    console.log('🔍 API Login Request:', credentials);
     const response = await this.client.post<AuthResponse>('/api/auth/login', credentials);
-    console.log('🔍 API Login Response:', response.data);
     this.setToken(response.data.accessToken); // Changed from token to accessToken
     return response.data;
   }
@@ -143,17 +141,104 @@ class ApiClient {
     
     try {
       // Decode JWT token to get user info
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return {
-        id: payload.user_id || payload.sub || payload.nameidentifier,
-        username: payload.username || payload.name,
-        email: payload.emailaddress || payload.email,
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return null;
+      }
+      
+      const payload = JSON.parse(atob(parts[1]));
+      
+      console.log('JWT Payload:', payload);
+      
+      const user: User = {
+        id: payload.nameidentifier || payload.user_id || payload.sub || '',
+        username: payload.name || payload.username || '',
+        email: payload.emailaddress || payload.email || '',
         createdAt: payload.iat ? new Date(payload.iat * 1000).toISOString() : '2025-01-01T00:00:00.000Z',
         updatedAt: payload.iat ? new Date(payload.iat * 1000).toISOString() : '2025-01-01T00:00:00.000Z'
       };
+      
+      console.log('Decoded User:', user);
+      
+      // Validate that we have the required fields
+      if (!user.id || !user.username) {
+        console.log('Missing required fields:', { id: user.id, username: user.username, email: user.email });
+        return null;
+      }
+      
+      return user;
     } catch {
       return null;
     }
+  }
+
+  // Error handling utility
+  static extractErrorMessage(error: unknown): string {
+    if (typeof error === 'object' && error !== null && 'response' in error) {
+      const axiosError = error as { 
+        response?: { 
+          status?: number;
+          data?: { 
+            title?: string;
+            detail?: string;
+            message?: string;
+          } 
+        } 
+      };
+      
+      const status = axiosError.response?.status;
+      const data = axiosError.response?.data;
+      
+      // Handle specific status codes
+      switch (status) {
+        case 409: // Conflict
+          if (data?.detail) {
+            // Handle duplicate registration
+            if (data.detail.includes('username') || data.detail.includes('email')) {
+              return data.detail;
+            }
+            return data.detail;
+          }
+          return 'A conflict occurred. Please check your input and try again.';
+          
+        case 401: // Unauthorized
+          if (data?.detail) {
+            return data.detail;
+          }
+          return 'Invalid credentials. Please check your username/email and password.';
+          
+        case 400: // Bad Request
+          if (data?.detail) {
+            return data.detail;
+          }
+          return 'Invalid input. Please check your form data.';
+          
+        case 404: // Not Found
+          return 'The requested resource was not found.';
+          
+        case 500: // Internal Server Error
+          return 'A server error occurred. Please try again later.';
+          
+        default:
+          if (data?.detail) {
+            return data.detail;
+          }
+          if (data?.message) {
+            return data.message;
+          }
+          if (data?.title) {
+            return data.title;
+          }
+          return 'An unexpected error occurred. Please try again.';
+      }
+    }
+    
+    // Handle other error types
+    if (error instanceof Error) {
+      return error.message;
+    }
+    
+    return 'An unknown error occurred. Please try again.';
   }
 }
 

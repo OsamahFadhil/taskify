@@ -34,7 +34,6 @@ public sealed class ToggleCompleteCommandHandler : IRequestHandler<ToggleComplet
         task.ToggleComplete(_clock.UtcNow);
         await _taskRepo.SaveChangesAsync(ct);
 
-        // Get user information for the task
         var user = await _userRepo.GetByIdAsync(task.UserId, ct);
 
         return new TaskDto(
