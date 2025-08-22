@@ -22,9 +22,6 @@ public sealed class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginCommand cmd, CancellationToken ct)
         => Ok(await _mediator.Send(cmd, ct));
 
-    // Stateless JWT — "logout" is handled client-side by dropping the token.
-    [HttpPost("logout")]
-    [Authorize]
-    public IActionResult Logout() => Ok(new { message = "Logged out (client should discard token)" });
+
 }
 

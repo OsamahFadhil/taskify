@@ -32,12 +32,12 @@ public sealed class TaskItem : AggregateRoot
     public static TaskItem Create(Guid userId, TaskName name, TaskDescription description, DueDate dueDate, DateTime nowUtc)
         => new(Guid.NewGuid(), userId, name, description, dueDate, nowUtc);
 
-    public void Update(TaskName name, TaskDescription description, DueDate dueDate)
+    public void Update(TaskName name, TaskDescription description, DueDate dueDate, DateTime nowUtc)
     {
         Name = name;
         Description = description;
         DueDate = dueDate;
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = nowUtc;
     }
 
     public void ToggleComplete(DateTime nowUtc)

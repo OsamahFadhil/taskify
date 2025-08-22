@@ -11,6 +11,19 @@ using Taskly.Application.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "http://127.0.0.1:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials()
+              .SetIsOriginAllowedToAllowWildcardSubdomains();
+    });
+});
+
 builder.Services.AddControllers(o => o.Filters.Add<ApiExceptionFilter>())
                 .AddNewtonsoftJson();
 
@@ -128,6 +141,32 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Taskly API V1");
     c.DocumentTitle = "Taskly API - Auto-Authenticated";
+});
+
+// Use CORS before other middleware
+app.UseCors("AllowFrontend");
+
+// Add CORS request logging middleware
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == "OPTIONS")
+    {
+        Console.WriteLine($"🔍 CORS Preflight Request: {context.Request.Method} {context.Request.Path}");
+        Console.WriteLine($"🔍 Origin: {context.Request.Headers["Origin"]}");
+        Console.WriteLine($"🔍 Access-Control-Request-Method: {context.Request.Headers["Access-Control-Request-Method"]}");
+        Console.WriteLine($"🔍 Access-Control-Request-Headers: {context.Request.Headers["Access-Control-Request-Headers"]}");
+    }
+
+    await next();
+
+    if (context.Request.Method == "OPTIONS")
+    {
+        Console.WriteLine($"🔍 CORS Response Headers:");
+        foreach (var header in context.Response.Headers)
+        {
+            Console.WriteLine($"  - {header.Key}: {header.Value}");
+        }
+    }
 });
 
 app.UseHttpsRedirection();

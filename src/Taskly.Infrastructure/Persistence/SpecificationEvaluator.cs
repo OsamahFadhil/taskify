@@ -10,8 +10,16 @@ public static class SpecificationEvaluator
         var query = input;
         if (spec.Criteria is not null) query = query.Where(spec.Criteria);
         if (spec.OrderBy is not null) query = spec.OrderBy(query);
-        if (spec.Skip.HasValue) query = query.Skip(spec.Skip.Value);
-        if (spec.Take.HasValue) query = query.Take(spec.Take.Value);
+        if (spec.Skip.HasValue)
+        {
+            Console.WriteLine($"[DEBUG] Applying Skip: {spec.Skip.Value}");
+            query = query.Skip(spec.Skip.Value);
+        }
+        if (spec.Take.HasValue)
+        {
+            Console.WriteLine($"[DEBUG] Applying Take: {spec.Take.Value}");
+            query = query.Take(spec.Take.Value);
+        }
         return query.AsNoTracking();
     }
 }

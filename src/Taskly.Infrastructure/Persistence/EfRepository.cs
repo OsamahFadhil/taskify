@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Taskly.Domain.Abstractions;
+using Taskly.Infrastructure.Persistence;
 
 namespace Taskly.Infrastructure.Persistence;
 
@@ -27,6 +28,6 @@ public sealed class EfRepository<TAggregate> : IRepository<TAggregate> where TAg
         await _context.SaveChangesAsync(ct);
 
     public IQueryable<TAggregate> Query(ISpecification<TAggregate> spec) =>
-        _context.Set<TAggregate>().Where(spec.Criteria ?? (_ => true));
+        SpecificationEvaluator.GetQuery(_context.Set<TAggregate>(), spec);
 }
 

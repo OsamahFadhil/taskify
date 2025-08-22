@@ -13,9 +13,29 @@ public sealed class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         b.Property(x => x.Id).IsRequired();
         b.Property(x => x.UserId).IsRequired();
         b.Property(x => x.IsCompleted).IsRequired();
-        b.Property(x => x.CreatedAt).IsRequired();
-        b.Property(x => x.UpdatedAt).IsRequired();
-        b.Property(x => x.CompletedAtUtc);
+
+        // Configure DateTime properties to be stored as UTC
+        b.Property(x => x.CreatedAt)
+            .IsRequired()
+            .HasConversion(
+                v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v,
+                v => v
+            );
+
+        b.Property(x => x.UpdatedAt)
+            .IsRequired()
+            .HasConversion(
+                v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v,
+                v => v
+            );
+
+        b.Property(x => x.CompletedAtUtc)
+            .HasConversion(
+                v => v.HasValue && v.Value.Kind == DateTimeKind.Unspecified
+                    ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc)
+                    : v,
+                v => v
+            );
 
         b.OwnsOne(x => x.Name, nb =>
         {
@@ -27,7 +47,14 @@ public sealed class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         });
         b.OwnsOne(x => x.DueDate, nb =>
         {
-            nb.Property(p => p.Value).HasColumnName("due_date");
+            nb.Property(p => p.Value)
+                .HasColumnName("due_date")
+                .HasConversion(
+                    v => v.HasValue && v.Value.Kind == DateTimeKind.Unspecified
+                        ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc)
+                        : v,
+                    v => v
+                );
         });
 
         b.HasIndex(x => new { x.UserId, x.IsCompleted });
