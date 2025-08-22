@@ -9,7 +9,7 @@ using Taskly.Domain.Users;
 
 namespace Taskly.Application.Features.Tasks;
 
-public sealed class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, TaskDto>
+public sealed class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommandWithId, TaskDto>
 {
     private readonly IRepository<TaskItem> _taskRepo;
     private readonly IRepository<User> _userRepo;
@@ -22,7 +22,7 @@ public sealed class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand
         _current = current;
     }
 
-    public async Task<TaskDto> Handle(UpdateTaskCommand request, CancellationToken ct)
+    public async Task<TaskDto> Handle(UpdateTaskCommandWithId request, CancellationToken ct)
     {
         var task = await _taskRepo.GetByIdAsync(request.Id, ct)
                    ?? throw new KeyNotFoundException("Task not found");

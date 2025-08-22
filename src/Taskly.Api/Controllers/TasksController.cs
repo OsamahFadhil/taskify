@@ -26,7 +26,7 @@ public sealed class TasksController : ControllerBase
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTaskCommand cmd, CancellationToken ct)
-        => Ok(await _mediator.Send(cmd with { Id = id }, ct));
+        => Ok(await _mediator.Send(new UpdateTaskCommandWithId(id, cmd.Name, cmd.Description, cmd.DueDate), ct));
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)

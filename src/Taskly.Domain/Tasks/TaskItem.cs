@@ -30,7 +30,7 @@ public sealed class TaskItem : AggregateRoot
     }
 
     public static TaskItem Create(Guid userId, TaskName name, TaskDescription description, DueDate dueDate, DateTime nowUtc)
-        => new(Guid.Empty, userId, name, description, dueDate, nowUtc);
+        => new(Guid.NewGuid(), userId, name, description, dueDate, nowUtc);
 
     public void Update(TaskName name, TaskDescription description, DueDate dueDate)
     {

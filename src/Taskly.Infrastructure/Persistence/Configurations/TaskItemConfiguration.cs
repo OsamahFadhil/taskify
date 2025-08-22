@@ -10,7 +10,7 @@ public sealed class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
     {
         b.ToTable("tasks");
         b.HasKey(x => x.Id);
-        b.Property(x => x.Id).ValueGeneratedOnAdd();
+        b.Property(x => x.Id).IsRequired();
         b.Property(x => x.UserId).IsRequired();
         b.Property(x => x.IsCompleted).IsRequired();
         b.Property(x => x.CreatedAt).IsRequired();
